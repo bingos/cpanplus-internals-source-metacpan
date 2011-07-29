@@ -195,7 +195,7 @@ As shown in the L</SYNOPSIS> you must set the L<CPANPLUS> configuration variable
 C<no_update> to a true value to use this source engine. This prevents L<CPANPLUS> from
 attempting to update CPAN indexes.
 
-Attempting to searches and getting a list of out of date modules in L<CPANPLUS> are
+Attempting to do searches and getting a list of out of date modules in L<CPANPLUS> are
 incredibly slow due the million or so web accesses that are incurred.
 
 =head1 SEE ALSO
