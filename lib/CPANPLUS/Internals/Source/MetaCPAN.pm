@@ -1,4 +1,4 @@
-package CPANPLUS::Internals::Source::CPANIDX;
+package CPANPLUS::Internals::Source::MetaCPAN;
 
 #ABSTRACT: MetaCPAN source implementation
 

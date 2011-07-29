@@ -56,17 +56,21 @@ sub FETCH {
     $key = uc( $key ) if $table eq 'author';
 
     my $url = $self->{idx} . $table . '/' . $key;
-    my $str;
 
     my $http = CPANPLUS::Internals::Source::MetaCPAN::HTTP->new();
 
-    my $status = $http->request( $url ) or return;
-    return unless $status eq '200';
-    return unless $str = $http->body;
-
+    my $data = {};
     my $href;
-    eval { $href = JSON::PP::decode_json( $str ); };
-    return unless $href and keys %$href;
+
+    {
+      my $str;
+      $http->reset;
+      my $status = $http->request( $url ) or return;
+      return unless $status eq '200';
+      return unless $str = $http->body;
+      eval { $href = JSON::PP::decode_json( $str ); };
+      return unless $href and keys %$href;
+    }
 
     ### expand author if needed
     ### XXX no longer generic :(
@@ -75,16 +79,18 @@ sub FETCH {
         $href->{module} = $key;
         $href->{version} = delete $href->{version};
         {
+          $http->reset;
           my $durl = $self->{idx} . 'release' . '/' . $href->{distribution};
-          my $dist;
-          return unless $http->request( $durl );
-          return unless $dist = $http->body;
+          my $str;
+          my $status = $http->request( $durl );
+          return unless $status eq '200';
+          return unless $str = $http->body;
           my $dref;
-          eval { $dref = JSON::PP::decode_json( $dist ); };
+          eval { $dref = JSON::PP::decode_json( $str ); };
           return unless $dref and keys %$dref;
           ( $href->{dist_file} = $dref->{download_url} ) =~ s!^.+?authors/id/!!;
         }
-          my ($author, $package) = $href->{dist_file} =~
+        my ($author, $package) = $href->{dist_file} =~
                 m|  (?:[A-Z\d-]/)?
                     (?:[A-Z\d-]{2}/)?
                     ([A-Z\d-]+) (?:/[\S]+)?/
@@ -96,14 +102,12 @@ sub FETCH {
         $href->{package} = $package;
         $href->{comment} = $href->{description} = $href->{dslip} = $href->{mtime} = '';
         $href->{author} = $cb->author_tree( $href->{author} ) or return;
-        foreach my $ufk ( keys %$href ) {
-          delete $href->{$ufk} unless grep { $ufk eq $_ }
-            qw(author comment description dslip mtime package module version);
-        }
+        $data->{$_} = delete $href->{$_}
+           for qw(author comment description dslip mtime package module version path);
     }
     else {
-        $href->{author} = delete $href->{name};
-        $href->{cpanid} = delete $href->{pauseid};
+        $data->{author} = delete $href->{name};
+        $data->{cpanid} = delete $href->{pauseid};
     }
 
     my $class = {
@@ -111,7 +115,7 @@ sub FETCH {
         author  => 'CPANPLUS::Module::Author',
     }->{ $table };
 
-    my $obj = $self->{store}->{$key} = $class->new( %$href, _id => $cb->_id );
+    my $obj = $self->{store}->{$key} = $class->new( %$data, _id => $cb->_id );
 
     return $obj;
 }
@@ -134,7 +138,7 @@ sub FIRSTKEY {
 
     my $str;
 
-    my $http = CPANPLUS::Internals::Source::CPANIDX::HTTP->new();
+    my $http = CPANPLUS::Internals::Source::MetaCPAN::HTTP->new();
 
     my $status = $http->request( $url ) or return;
     return unless $status eq '200';
