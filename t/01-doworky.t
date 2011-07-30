@@ -20,6 +20,6 @@ $conf->set_conf( enable_custom_sources => 0 );
 $conf->set_conf( no_update => '1' );
 $conf->set_conf( source_engine => 'CPANPLUS::Internals::Source::MetaCPAN' );
 my $cb = CPANPLUS::Backend->new($conf);
-my $mod = $cb->parse_module( module => 'Env::Sanctify' );
+my $mod = $cb->parse_module( module => 'LWP' );
 isa_ok( $mod, 'CPANPLUS::Module' );
 isa_ok( $mod->author, 'CPANPLUS::Module::Author' );
