@@ -104,7 +104,7 @@ sub reset
   }
   $self->{HTTPReadBuffer} = "";
   $self->{method} = "GET";
-  $self->{headers} = { 'user-agent' => "HTTP::Lite/$CPANPLUS::Internals::Source::MetaCPAN::HTTP::VERSION" };
+  $self->{headers} = { 'user-agent' => "CPANPLUS-Internals-Source-MetaCPAN/$CPANPLUS::Internals::Source::MetaCPAN::HTTP::VERSION" };
   $self->{headermap} = { 'user-agent'  => 'User-Agent' };
 }
 
