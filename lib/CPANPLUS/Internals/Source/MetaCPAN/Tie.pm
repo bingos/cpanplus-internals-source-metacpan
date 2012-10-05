@@ -76,6 +76,7 @@ sub FETCH {
     ### XXX no longer generic :(
     if( $table eq 'module' ) {
         return if $href->{maturity} and $href->{maturity} eq 'developer';
+        return unless $href->{indexed};
         $href->{author} = delete $href->{author};
         $href->{module} = $key;
         $href->{version} = delete $href->{version};
