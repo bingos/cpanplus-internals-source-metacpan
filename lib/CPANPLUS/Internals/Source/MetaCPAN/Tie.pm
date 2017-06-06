@@ -53,6 +53,8 @@ sub FETCH {
         return $obj;
     }
 
+    #https://github.com/miyagawa/cpanminus/blob/devel/lib/App/cpanminus/script.pm#L596
+
     $key = uc( $key ) if $table eq 'author';
 
     my $url = $self->{idx} . $table . '/' . $key;
@@ -66,6 +68,11 @@ sub FETCH {
       my $str;
       $http->reset;
       my $status = $http->request( $url ) or return;
+      unless ( $status eq '200' ) {
+        warn $status, "\n";
+        warn $_, "\n" for $http->headers_array();
+        warn $http->body();
+      }
       return unless $status eq '200';
       return unless $str = $http->body;
       eval { $href = JSON::PP::decode_json( $str ); };
