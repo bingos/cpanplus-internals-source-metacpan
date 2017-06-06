@@ -15,7 +15,7 @@ use Params::Check               qw[allow check];
 use Locale::Maketext::Simple    Class => 'CPANPLUS', Style => 'gettext';
 use Module::Load::Conditional   qw[check_install];
 
-use constant METACPAN => 'http://api.metacpan.org/';
+use constant METACPAN => 'http://fastapi.metacpan.org/';
 
 {
     my $metacpan = METACPAN;
